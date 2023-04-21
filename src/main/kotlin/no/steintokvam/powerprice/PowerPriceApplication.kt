@@ -14,6 +14,7 @@ open class PowerPriceApplication
 private val LOGGER = LoggerFactory.getLogger(PowerPriceApplication::class.java)
 
 fun main(args: Array<String>) {
+
 	runApplication<PowerPriceApplication>(*args)
 	//Store.zone = System.getenv("zone")
 	if(Store.zone == null) {
