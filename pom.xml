@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>no.steintokvam</groupId>
 	<artifactId>powerprice</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>PowerPrice</name>
 	<description>Get power prices in Norway</description>
 	<properties>
