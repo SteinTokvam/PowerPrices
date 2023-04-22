@@ -26,9 +26,9 @@ class PriceApi {
     }
 
     @GetMapping("/prices/cheapest/{from}/{hours}")
-    fun getCheapestPricesFrom(@PathVariable from: LocalDateTime, @PathVariable hours: Int): List<ElectricityPrice> {
+    fun getCheapestPricesFrom(@PathVariable from: LocalDateTime, @PathVariable hours: Int, @PathVariable to: LocalDateTime): List<ElectricityPrice> {
         LOGGER.info("Finding $hours cheapest hours from $from.")
-        val lowestPrices = PriceService().getLowestPrices(from, hours)
+        val lowestPrices = PriceService().getLowestPrices(from, hours, to)
         if(lowestPrices.isEmpty()) {
             LOGGER.info("Found no prices to return for the hours given.")
         }

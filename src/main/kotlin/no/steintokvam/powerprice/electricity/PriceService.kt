@@ -47,27 +47,29 @@ class PriceService {
     }
 
     fun getLowestPrices(
-        date: LocalDateTime,
-        hoursToGet: Int
+        from: LocalDateTime,
+        hoursToGet: Int,
+        to: LocalDateTime
     ) : List<ElectricityPrice> {
         val allPrices = Store.prices
-        if(Store.getPricesUntil.isBefore(LocalDateTime.now())) {
-            Store.getPricesUntil = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(7, 0))
+        if(to.isBefore(LocalDateTime.now())) {
+            LOGGER.warn("to time is set before current time.")
+            return emptyList()
         }
 
-        if(getHoursBetween(date, Store.getPricesUntil) < hoursToGet || allPrices.isEmpty()) {
+        if(getHoursBetween(from, to) < hoursToGet || allPrices.isEmpty()) {
             //tar lengre tid å lade enn man har til den er ferdig aka må kjøre på eller man har ingen priser
             return emptyList()
         }
 
         val sortedPrices = allPrices
-            .filter { it.time_start.isAfter(date) || it.time_start.hour == date.hour }
-            .filter { it.time_start.isBefore(Store.getPricesUntil) }
+            .filter { it.time_start.isAfter(from) || it.time_start.hour == from.hour }
+            .filter { it.time_start.isBefore(to) }
             .sortedBy { it.NOK_per_kWh }
 
         if(sortedPrices.size < hoursToGet) {
             LOGGER.error("Has ${sortedPrices.size} prices, but expected to have at least $hoursToGet prices.")
-            LOGGER.info("Has ${allPrices.size} unfiltered prices. Finnish charging by is: ${Store.getPricesUntil}")
+            LOGGER.info("Has ${allPrices.size} unfiltered prices. Finnish charging by is: $to")
             LOGGER.info("All prices:")
             allPrices.forEach { LOGGER.info("${it.time_start}") }
             return sortedPrices

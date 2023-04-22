@@ -9,6 +9,5 @@ class Store {
     companion object {
         var prices = emptyList<ElectricityPrice>()
         var zone = "NO1"
-        var getPricesUntil = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(7, 0))
     }
 }
