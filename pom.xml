@@ -97,7 +97,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>com.programming.kotlin.HelloKt</mainClass>
+							<mainClass>no.steintokvam.powerprice.PowerPriceApplicationKt</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
