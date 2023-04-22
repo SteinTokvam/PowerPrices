@@ -100,6 +100,7 @@ class PriceService {
         } finally {
             response?.close()
         }
+        return mutableListOf()
     }
 
     private fun Float.format(scale: Int) = "%.${scale}f".format(Locale.US, this).toFloat()
