@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import no.steintokvam.powerprice.infra.store.Store
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.slf4j.Logger
@@ -13,6 +14,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 
@@ -40,6 +42,40 @@ class PriceService {
         }
 
         return prices
+    }
+
+    fun getLowestPrices(
+        date: LocalDateTime,
+        hoursToGet: Int
+    ) : List<ElectricityPrice> {
+        val allPrices = Store.prices
+        if(Store.getPricesUntil.isBefore(LocalDateTime.now())) {
+            Store.getPricesUntil = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(7, 0))
+        }
+
+        if(getHoursBetween(date, Store.getPricesUntil) < hoursToGet || allPrices.isEmpty()) {
+            //tar lengre tid å lade enn man har til den er ferdig aka må kjøre på eller man har ingen priser
+            return emptyList()
+        }
+
+        val sortedPrices = allPrices
+            .filter { it.time_start.isAfter(date) || it.time_start.hour == date.hour }
+            .filter { it.time_start.isBefore(Store.getPricesUntil) }
+            .sortedBy { it.NOK_per_kWh }
+
+        if(sortedPrices.size < hoursToGet) {
+            LOGGER.error("Has ${sortedPrices.size} prices, but expected to have at least $hoursToGet prices.")
+            LOGGER.info("Has ${allPrices.size} unfiltered prices. Finnish charging by is: ${Store.getPricesUntil}")
+            LOGGER.info("All prices:")
+            allPrices.forEach { LOGGER.info("${it.time_start}") }
+            return sortedPrices
+        }
+        return sortedPrices
+            .subList(0, hoursToGet)
+    }
+
+    fun getHoursBetween(first: LocalDateTime, second: LocalDateTime): Int {//TODO: burde være i en util klasse
+        return ChronoUnit.HOURS.between(first, second).toInt()
     }
 
     private fun getPriceForDay(zone: String, date: LocalDate): MutableList<ElectricityPrice> {
