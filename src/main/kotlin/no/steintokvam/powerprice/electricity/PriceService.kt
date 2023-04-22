@@ -8,8 +8,10 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.steintokvam.powerprice.infra.store.Store
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.lang.Exception
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -83,12 +85,21 @@ class PriceService {
             LOGGER.warn(String.format("Zone %s is not valid", zone))
             return mutableListOf()
         }
-        val request = createRequest(zone, date)
-        val response = client.newCall(request).execute()
+        var response: Response? = null
+        try {
+            val request = createRequest(zone, date)
+            response = client.newCall(request).execute()
 
-        val collectionType = mapper.typeFactory.constructCollectionType(List::class.java, ElectricityPrice::class.java)
-        return mapper.readValue<List<ElectricityPrice>>(response.body?.charStream()?.readText(), collectionType)
-            .onEach { it.NOK_per_kWh = it.NOK_per_kWh.format(2) }.toMutableList()
+            val collectionType =
+                mapper.typeFactory.constructCollectionType(List::class.java, ElectricityPrice::class.java)
+            return mapper.readValue<List<ElectricityPrice>>(response.body?.charStream()?.readText(), collectionType)
+                .onEach { it.NOK_per_kWh = it.NOK_per_kWh.format(2) }.toMutableList()
+        } catch (e: Exception) {
+            LOGGER.warn("Couldn't get prices for $date in zone $zone.")
+            LOGGER.error(e.toString())
+        } finally {
+            response?.close()
+        }
     }
 
     private fun Float.format(scale: Int) = "%.${scale}f".format(Locale.US, this).toFloat()
