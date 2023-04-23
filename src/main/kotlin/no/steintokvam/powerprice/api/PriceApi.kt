@@ -16,16 +16,15 @@ class PriceApi {
 
     @GetMapping("/prices/all")
     fun getPrices(): List<ElectricityPrice> {
-        LOGGER.info("Got called.")
+        LOGGER.info("Fetching all prices.")
         if(Store.prices.isEmpty()) {
             LOGGER.info("Has no power price to give!")
             return emptyList()
         }
-        LOGGER.info("returning ${Store.prices}")
         return Store.prices
     }
 
-    @GetMapping("/prices/cheapest/{from}/{hours}")
+    @GetMapping("/prices/cheapest/{from}/{hours}/{to}")
     fun getCheapestPricesFrom(@PathVariable from: LocalDateTime, @PathVariable hours: Int, @PathVariable to: LocalDateTime): List<ElectricityPrice> {
         LOGGER.info("Finding $hours cheapest hours from $from - $to.")
         val lowestPrices = PriceService().getLowestPrices(from, hours, to)
