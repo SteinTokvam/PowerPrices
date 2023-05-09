@@ -11,4 +11,5 @@ RUN mvn -f ./pom.xml clean package
 #
 FROM openjdk:17-oracle
 COPY --from=build ./target/*.jar powerprices.jar
+ENV zone = "NO1"
 ENTRYPOINT ["java","-jar","/powerprices.jar"]
