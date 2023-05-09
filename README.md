@@ -7,10 +7,4 @@ Checks for electricity prices in Norway and serves them on a couple of endpoints
 Can be found at [Dockerhub](https://hub.docker.com/r/steintokvam/powerprices).
 The app expects an environment variable zone that by default is NO1, but can be set to the following values:
 
-| Value    |
-|-----|
-| NO1 |
-| NO2 |
-| NO3 |
-| NO4 |
-| NO5 |
+NO1 | NO2 | NO3 | NO4 | NO5
