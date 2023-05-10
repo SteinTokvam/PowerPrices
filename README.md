@@ -19,7 +19,7 @@ e.g:
 ```
 /prices/cheapest/2023-05-10T10:00/2/2023-05-10T20:00
 ```
-Will return the 2 cheapest hours for May 10, 2023 between 13(1PM) and 20(8PM).
+Will return the 2 cheapest hours for May 10, 2023 between 13(1PM) and 20(8PM). The list of prices will be sorted from cheapest to most expensive hour.
 
 Prices are returned as a list of json objects declared like this:
 ```json
