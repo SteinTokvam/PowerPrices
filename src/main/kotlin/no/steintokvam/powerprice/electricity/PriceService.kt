@@ -110,12 +110,12 @@ class PriceService {
     private fun createRequest(zone: String, date: LocalDate): Request {
         val day = date.dayOfMonth
         val month = date.monthValue
-        val monthEndpoint = if (month > 10)
+        val monthEndpoint = if (month > 9)
             "/$month"
         else
             "/0$month"
 
-        val dayEndpoint = if (day > 10)
+        val dayEndpoint = if (day > 9)
             "-$day"
         else
             "-0$day"
